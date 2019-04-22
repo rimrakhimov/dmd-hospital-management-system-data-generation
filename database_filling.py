@@ -38,20 +38,6 @@ def user_types_initialization(db):
         'types': [{'_key': userTypes[i], 'type': i} for i in userTypes.keys()]
     })
 
-def addresses_initialization(db):
-    addresses = []
-    for i in range(totalUserNumber):
-        addresses.append(get_address())
-    query = """
-        LET data = @addresses
-        FOR d IN data
-            INSERT d INTO Address
-    """
-    db.AQLQuery(query, bindVars={
-        'addresses': addresses
-    })
-    return addresses
-
 def credentials_initialization(db):
     credentialsCollection = db['Credential']
     credentials = []
@@ -80,24 +66,12 @@ def credentials_initialization(db):
             file.write(str(credential) + ',' + '\n')
     return profiles
 
-def users_initialization(db, profiles, addresses):
-    query = """
-        LET data = @addresses
-        FOR address IN Address
-            FOR d IN data
-                FILTER address.City == d.City
-                FILTER address.Street == d.Street
-                FILTER address.House == d.House
-                FILTER address.Appartment == d.Appartment
-                RETURN {_key: address._key}
-    """
-    queryResult = db.AQLQuery(query, rawResults=True, bindVars={"addresses": addresses})
-    addressKeys = [i['_key'] for i in queryResult]
-
+def users_initialization(db, profiles):
     index = 0
     usersInfo = []
     for user in USERS.keys():
         for i in range(USERS[user]):
+            address = get_address()
             usersInfo.append({
                 '_key': profiles[index]['username'],
                 'Name': profiles[index]['name'],
@@ -105,10 +79,15 @@ def users_initialization(db, profiles, addresses):
                 'Email': profiles[index]['mail'],
                 'IsVerified': True,
                 'VerificationLink': get_verification_link(),
-                'AddressKey': addressKeys[index],
+                'Country': address['Country'],
+                'City': address['City'],
+                'ZipCode': address['ZipCode'],
+                'Street': address['Street'],
+                'House': address['House'],
+                'Appartment': address['Appartment'],
                 'BirthDate': get_birth_date(),
                 'Gender': profiles[index]['sex'],
-                'PhotoLink': "http://seephotos.com",
+                'PhotoLink': "http://photoexample.com",
                 'UserType': get_user_types()[user]
             })
             if user == 'patient':
@@ -150,18 +129,15 @@ def main():
     # Create all needed collections
     db.createCollection(name="Credential")
     db.createCollection(name="User")
-    db.createCollection(name="Address")
     db.createCollection(name="UserType")
 
     admin_initialization(db)
 
     user_types_initialization(db)
 
-    addresses = addresses_initialization(db)
-
     profiles = credentials_initialization(db)
 
-    users_initialization(db, profiles, addresses)
+    users_initialization(db, profiles)
 
     rooms_initialization(db)
 

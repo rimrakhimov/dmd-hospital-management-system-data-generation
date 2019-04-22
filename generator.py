@@ -42,7 +42,7 @@ def get_address():
 
 def get_birth_date():
     minBirthYear = 1970
-    maxBirthYear = 2005
+    maxBirthYear = 1995
     # date in format YYYY-MM-DD
     birthDate = str(randint(minBirthYear, maxBirthYear)) + '-'
     birthDate += str(randint(1, 13)).zfill(2) + '-'
