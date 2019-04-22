@@ -1,0 +1,105 @@
+Credential
+{
+	_key: string,
+	PasswordHash: string,
+}
+
+User
+{
+	_key: string,				
+	Name: string,
+	Phone: string,
+	Email: string,
+	IsVerified: bool,
+	VerificationLink: string,
+
+	Country: string,
+	City: string,
+	ZipCode: string,
+	Street: string,
+	House: string,
+	Appartment: string
+
+	BirthDate: string,
+	Gender: char,
+	PhotoLink: string,
+	UserType: char,	
+
+	# Patients
+
+	Height: float,
+	Weight: float,
+
+	# Staff
+
+	Salary: int,
+	History: string
+
+	# Doctors
+
+	Designation: string
+	DoctorType: string
+	WorkingDays: bool[7]
+}
+
+
+
+UserType
+{
+	_key: char,
+	Type: string
+}
+
+Room
+{
+    _key: string (room number),
+    Type: string,
+    Nurses: string[]
+}
+
+Appointment
+{
+    _key: string (by default),
+    _from: string (PatientKey),
+    _to: string (DoctorKey),
+	Date: string (YYYY-MM-DD),
+	Time: string (HH-mm),
+	RoomKey: string,
+	IsApproved: bool,
+	ReportURL: string
+}
+
+Medicine
+{
+	_key: string (by default),
+	Title: string,
+	Price: float,
+	ExpirationDate: string (YYYY-MM-DD)
+	Amount: int
+}
+
+Payment
+{
+    _key: string (by default),
+    PatientKey: string,
+    Title: string[],
+    Cost: float,
+    Date: string (YYYY-MM-DD)
+}
+
+TestType
+{
+    _key: string (title),
+    TemplateURL: string
+}
+
+Test
+{
+	_key: string (by default),
+	_from: string (PatientKey),
+	_to: string (TestTypeKey),
+	AppointmentKey: string,
+	LaboratoristKey: string,
+	DateTime: string (YYYY-MM-DD HH-mm),
+	ReportURL: string
+}
